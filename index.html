@@ -260,7 +260,8 @@
                     <p>총 ${totalAnswered}문제 중 ${correctAnswersCount}문제 정답</p>
                     <p>정답률: ${accuracy}%</p>
                 `;
-                updateProgress();
+                progressFill.style.width = '100%';
+                questionCounter.textContent = "완료!";
                 resultMessageElement.textContent = "";
                 resultMessageElement.className = "";
                 changeCharacterEmotion('finish');
