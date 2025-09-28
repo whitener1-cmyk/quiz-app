@@ -1,450 +1,434 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>산업안전보건법 퀴즈 (버튼 추가)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        .quiz-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 90vw;
-            height: 90vh;
-            max-width: 1200px;
-        }
-        .quiz-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4vw;
-            width: 100%;
-        }
-        .character-box {
-            position: relative;
-            width: 35vw;
-            max-width: 350px;
-            height: auto;
-            pointer-events: none;
-        }
-        .character-box img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .question-box {
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 55vw;
-            max-width: 700px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>산업안전보건법 퀴즈 (모바일 개선/버튼)</title>
+  <style>
+    /* 기본 레이아웃 */
+    html, body { height: 100%; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* 데스크톱 기준 */
+      overflow: auto;    /* 모바일 키보드 시 스크롤 허용 */
+    }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
+    .quiz-container {
+      width: 100%;
+      max-width: 1100px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
 
-        .question-counter {
-            font-size: clamp(12px, 1.2vw, 16px);
-            color: #666;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
+    .quiz-content {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 24px;
+      width: 100%;
+    }
 
-        .question-box h2 {
-            font-size: clamp(12px, 1.5vw, 20px);
-            color: #333;
-            margin-bottom: 2vh;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            line-height: 1.4;
-        }
-        input[type="text"] {
-            width: calc(100% - 24px);
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: clamp(12px, 1.2vw, 16px);
-            text-align: center;
-        }
-        #result-message {
-            margin-top: 2vh;
-            font-weight: bold;
-            font-size: clamp(11px, 1.3vw, 16px);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            line-height: 1.3;
-        }
-        
-        .correct { color: green; }
-        .wrong { color: red; }
-        .warning { color: orange; }
+    /* 좌측 캐릭터 */
+    .character-box {
+      flex: 0 0 320px;        /* 데스크톱 고정폭 */
+      max-width: 35%;
+      pointer-events: none;
+      align-self: center;
+    }
+    .character-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
 
-        /* 버튼 스타일 */
-        .button-box {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            gap: 10px;
-        }
-        .nav-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            transition: background 0.2s;
-        }
-        .nav-btn:hover {
-            background-color: #45a049;
-        }
-        .nav-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+    /* 우측 문제 박스 */
+    .question-box {
+      flex: 1 1 auto;          /* 남은 공간을 넓게 */
+      min-width: 0;            /* 줄바꿈/수축 허용 */
+      background-color: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.08);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
 
-        #navigation-info {
-            position: absolute;
-            bottom: 2vh;
-            left: 2vw;
-            color: #555;
-            font-size: 1.5vh;
-            text-align: left;
-            white-space: normal;
-            max-width: 40vw;
-        }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #45a049);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
 
-        /* iOS 확대 방지 */
-        html, body { -webkit-text-size-adjust: 100%; }
+    .question-counter {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
 
-        @media (max-width: 768px) {
-            body {
-                overflow: auto;
-                min-height: 100dvh;
-            }
-            .quiz-content {
-                flex-direction: column;
-                gap: 12px;
-            }
-            .character-box {
-                width: 55vw;
-                max-width: 200px;
-                margin-top: 6px;
-            }
-            .character-box img {
-                width: 100%;
-                height: auto;
-                max-height: 25vh;
-                object-fit: contain;
-            }
-            .question-box {
-                width: 100%;
-                max-width: none;
-                padding: 18px;
-                max-height: unset;
-                overflow: visible;
-            }
-            .question-box h2 {
-                font-size: 16px;
-                line-height: 1.5;
-                word-break: keep-all;
-            }
-            input[type="text"] {
-                width: 100%;
-                font-size: 17px;
-                line-height: 1.5;
-                padding: 14px 12px;
-                height: auto;
-            }
-            .question-counter {
-                font-size: 13px;
-                margin-bottom: 10px;
-            }
-            #navigation-info {
-                position: static;
-                font-size: 12px;
-                margin: 8px 12px 16px;
-                max-width: 100%;
-            }
-        }
-        @media (max-width: 380px) {
-            .character-box { display: none; }
-        }
-    </style>
+    .question-box h2 {
+      font-size: 18px;
+      color: #333;
+      margin: 0 0 16px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      line-height: 1.5;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px; /* 데스크톱 기준 */
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    #result-message {
+      margin-top: 14px;
+      font-weight: bold;
+      font-size: 14px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    .correct { color: #2e7d32; }
+    .wrong { color: #d32f2f; }
+    .warning { color: #ef6c00; }
+
+    /* 버튼 박스 */
+    .button-box {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      gap: 10px;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: #fff;
+      transition: background 0.2s ease;
+    }
+    .nav-btn:hover { background-color: #45a049; }
+    .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    /* 하단 안내 */
+    #navigation-info {
+      position: absolute;
+      bottom: 2vh;
+      left: 2vw;
+      color: #555;
+      font-size: 12px;
+      text-align: left;
+      white-space: normal;
+      max-width: 40vw;
+    }
+
+    /* 모바일 최적화 */
+    @media (max-width: 768px) {
+      body { min-height: 100dvh; } /* iOS 주소창/키보드 대응 */
+      .quiz-content {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;     /* 가로 꽉 차게 */
+      }
+      .character-box {
+        flex: 0 0 auto;
+        width: 56vw;
+        max-width: 200px;
+        margin: 4px auto 0;      /* 가운데 정렬 */
+      }
+      .character-box img {
+        max-height: 25vh;
+        object-fit: contain;
+      }
+      .question-box {
+        width: 100%;
+        max-height: unset;       /* 키보드 시 내부 스크롤보다 바디 스크롤 선호 */
+        overflow: visible;
+        padding: 18px;
+      }
+      .question-box h2 { font-size: 16px; line-height: 1.5; word-break: keep-all; }
+      input[type="text"] { font-size: 17px; line-height: 1.5; padding: 14px 12px; }
+      .question-counter { font-size: 13px; margin-bottom: 10px; }
+      /* 모바일에서는 안내문 숨김 */
+      #navigation-info { display: none; }
+    }
+
+    /* 초소형 화면(아이폰 SE 등)에서는 캐릭터 숨김 */
+    @media (max-width: 380px) {
+      .character-box { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="quiz-container">
+  <div class="quiz-container">
     <div class="quiz-content">
-        <div class="character-box">
-            <img id="announcer-character" src="announcer_default.gif" alt="아나운서 캐릭터">
-        </div>
-        <div class="question-box">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-            <div class="question-counter" id="question-counter"></div>
-            <div id="quiz-question"></div>
-            <div id="result-message"></div>
+      <div class="character-box">
+        <!-- 이미지가 없거나 경로가 틀리면 자동 숨김 -->
+        <img id="announcer-character"
+             src="announcer_default.gif"
+             alt="아나운서 캐릭터"
+             onerror="this.parentElement.style.display='none'">
+      </div>
 
-            <!-- 버튼 박스 추가 -->
-            <div class="button-box">
-                <button id="prev-btn" class="nav-btn">⬅ 이전</button>
-                <button id="next-btn" class="nav-btn">다음 ➡</button>
-            </div>
+      <div class="question-box">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="question-counter" id="question-counter"></div>
+        <div id="quiz-question"></div>
+        <div id="result-message"></div>
+
+        <div class="button-box">
+          <button id="prev-btn" class="nav-btn">⬅ 이전</button>
+          <button id="next-btn" class="nav-btn">다음 ➡</button>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div id="navigation-info">
-    <span>💡 엔터(Enter)는 다음 문제, Alt+b는 이전 문제</span><br>
+  <div id="navigation-info">
+    <span>💡 엔터(Enter)는 다음 문제, Alt+b는 이전 문제</span><br />
     <span>Alt+z 키를 누르면 처음으로 돌아갑니다.</span>
-</div>
+  </div>
 
-<script>
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const quizData = [
-            { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 1번", answer: ["안전 및 보건에 관한 관리조직과 그 직무에 관한 사항"] },
-            { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 2번", answer: ["안전보건교육에 관한 사항"] },
-            { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 3번", answer: ["작업장의 안전 및 보건관리에 관한 사항"] },
-            { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 4번", answer: ["사고조사 및 대책수립에 관한 사항"] },
-            { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 1. S", answer: ["요구성능(증기의 분출압력을 요구)"] },
-            { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 2. F", answer: ["유량제한기구(전량식)"] },
-            { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 3. II", answer: ["호칭입구 크기 구분(25mm 초과 50 mm 이하)"] },
-            { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 4. 1", answer: ["호칭압력구분(1MPa 이하)"] },
-            { question: "유해, 위험 방지를 위한 방호조치를 하지 아니하고는 양도, 대여, 설치 또는 사용에 제공하거나 양도, 대여의 목적으로 진열해서는 아니되는 기계, 기구를 6가지 쓰시오", answer: ["예초기", "원심기", "공기압축기", "금속절단기", "지게차", "포장기계(진공포장기, 래핑기로 한정)"] },
-            { question: "보호구 안전인증고시상 안전인증 대상 안전모의 시험 성능 항목을 6가지 쓰시오", answer: ["내관통성시험", "내전압성시험", "난연성시험", "충격흡수시험", "내수성시험", "턱끈풀림시험"] },
-            { question: "클러치맞물림개소수가 4개, 300SPM인 프레스기 양수기동식 방호장치의 안전거리(mm)를 계산하시오", answer: ["240mm"] },
-            { question: "연평균근로자 1440명이 근무하는 어느 사업장에서 주당 40시간씩 연간 50주를 근무하고, 조기출근 및 잔업시간의 합계가 100,000시간, 출근율은 94%인 사업장에서 연간 40건의 재해가 발생하여 근로손실일수가 1200일, 사망재해가 1명 발생했을 때 강도율을 계산하시오", answer: ["약 3.1"] },
-            { question: "산업안전보건법상 ( ) 안에 적합한 내용을 쓰시오 (1)고용노동부장관은 사업주가 필요한 안전조치 또는 보건조치를 이행하지 아니하여 중대재해가 발생한 사업장은 안전보건진단을 받아 ( )을 수립하여 시행할 것을 명할 수 있다. (2)사업주는 수립, 시행 명령을 받은 날로부터 ( )일 이내에 관할 지방고용노동관서의 장에게 해당 계획서를 제출해야 한다.", answer: ["안전보건개선계획", "60"] },
-            { question: "방호장치 안전인증고시상 손쳐내기식 방호장치를 사용하는 (1)기계, 기구의 명칭을 쓰고, (2)분류기호를 쓰시오", answer: ["프레스", "D"] },
-            { question: "산업안전보건법상 다음에 해당하는 안전보건표지의 명칭을 각각 쓰시오", answer: ["폭발성물질 경고", "부식성물질 경고", "물체이동 금지", "들것"] },
-            { question: "산업안전보건법상 철골작업을 중지해야 하는 기상조건에 대하여 ( )안에 알맞은 숫자를 쓰시오. 1. 풍속이 초당 ( )이상인 경우 2. 강우량이 시간당 ( )이상인 경우 3. 강설량이 시간당 ( )이상인 경우", answer: ["10m", "1mm", "1cm"] },
-            { question: "산업안전보건법상 안전인증 심사 중 형식별 제품심사의 심사기간을 60일로 하는 보호구를 8가지 쓰시오", answer: ["추락 및 감전위험방지용 안전모", "안전화", "안전장갑", "방진마스크", "방독마스크", "송기마스크", "전동식 호흡보호구", "보호복"] },
-            { question: "다음은 산업안전보건법상 누전차단기를 접속하는 경우 사업주의 준수사항에 관한 것이다. ( )안에 적합한 내용을 쓰시오. 전기기계, 기구에 설치되어 있는 누전차단기는 정격감도전류가 ( )mA이하이고, 작동시간은 ( )초 이내일것", answer: ["30", "0.03"] },
-            { question: "다음은 산업안전보건법상 작업중지의 해제에 관한 사항이다. ( )안에 적합한 내용을 쓰시오. 1. 사업주가 작업중지의 해제를 요청한 경우에는 작업중지명령 해제신청서를 작성하여 사업장의 소재지를 관할하는 지방고용노동관서의 장에게 제출해야 한다. 2. 사업주가 작업중지명령 해제신청서를 제출하는 경우에는 미리 유해, 위험요인 개선내용에 대하여 중대재해가 발생한 해당작업 ( )의 의견을 들어야 한다. 3. 지방고용노동관서의 장은 작업중지명령 해제를 요청받은 경우에는 ( )으로 하여금 안전, 보건을 위하여 필요한 조치를 확인하도록 하고, 천재지변 등 불가피한 경우를 제외하고는 해제요청일 다음날부터 ( )이내(토요일과 공휴일을 포함하되, 토요일과 공휴일이 연속하는 경우에는 3일까지만 포함)에 ( )를 개최하여 심의한 후 해당 조치가 완료되었다고 판단될 경우에는 즉시 작업중지명령을 해제해야 한다.", answer: ["근로자", "근로감독관", "4일", "작업중지해제심의위원회"] },
-            { question: "공정안전보고서 내용 중 공정위험평가서에 적용되는 위험성평가기법에 있어 '저장탱크설비, 유틸리티 설비 및 제조공정 중 고체 건조, 분쇄설비 등 간단한 단위 공정'에 선정하는 위험성 평가기법을 보기에서 골라 2가지를 쓰시오 <보기>1. 이상위험도분석기법 2. 방호계층분석기법 3. 상대위험순위 결정기법 4. 작업자 실수분석기법", answer: ["상대위험순위 결정기법", "작업자 실수분석기법"] },
-            { question: "산업안전보건법상 설치, 이전하는 경우 안전인증을 받아야 하는 기계를 3가지 쓰시오", answer: ["크레인", "리프트", "곤돌라"] },
-            { question: "산업안전보건법상 (1) 안전보건관리규정을 작성할 때 포함되어야 할 사항 4가지를 쓰시오", answer: ["안전 및 보건에 관한 관리조직과 그 직무에 관한 사항", "안전보건교육에 관한 사항", "작업장의 안전 및 보건관리에 관한 사항", "사고조사 및 대책 수립에 관한 사항"] },
-            { question: "산업안전보건법상 (2) 안전보건관리규정을 작성해야하는 자동차 제조업의 상시근로자 수는 몇명 이상인지 쓰시오", answer: ["100명"] },
-            { question: "산업안전보건법상 산업용 로봇의 작동범위에서 로봇에 대하여 교시 등의 작업을 하는 경우에는 해당 로봇의 예기치 못한 작동 또는 오조작에 의한 위험을 방지하기 위하여 작업지침을 정하여 그 지츰에 따라 작업을 하도록 하여야 한다. 이 때 작업지침에 포함되어야 할 사항을 5가지 쓰시오", answer: ["로봇의 조작 방법 및 순서", "작업중의 매니퓰레이터의 속도", "2명이상의 근로자에게 작업을 시킬 경우의 신호 방법", "이상을 발견한 경우의 조치", "이상을 발견하여 로봇의 운전을 정지시킨 후 이를 재가동시킬 경우의 조치"] },
-            { question: "산업안전보건법상 관계자 외 출입금지 표지판 중 '허가대상물질 작업장' 표지 하단에 작성해야 할 내용을 2가지 쓰시오", answer: ["보호구 및 보호복 착용", "흡연 및 음식물 섭취 금지"] },
-            { question: "산업안전보건법상 (1) 중대산업사고의 정의를 쓰시오", answer: ["유해하거나 위험한 설비로부터의 위험물질 누출, 화재 및 폭발 등으로 인하여 사업장 내의 근로자에게 즉시 피해를 주거나 사업장 인근지역에 피해를 줄 수 있는 사고"] },
-            { question: "산업안전보건법상 (2) 중대산업사고 예방을 위해 작성하고 고용노동부장관에게 제출하여 심사를 받아야 하는 보고서의 명칭을 쓰시오", answer: ["공정안전보고서"] },
-            { question: "산업안전보건법상 사업주가 작업장에서 취급하는 물질안전보건자료의 내용을 근로자에게 교육해야 하는 경우에 대해 3가지 쓰시오", answer: ["새로운 물질안전보건자료 대상물질이 도입된 경우", "유해성 및 위험성 정보가 변경된 경우", "물질안전보건자료 대상물질을 제조, 사용, 운반 또는 저장하는 작업에 근로자를 배치하게 된 경우"] },
-            { question: "안전검사 대상 기계 등의 안전검사 주기에 관한 사항이다. 적합한 숫자를 쓰시오 (1) 건설현장에서 사용하는 리프트 : 최초로 설치한 날부터 (   )개월마다 (2) 산업용 로봇 : 사업장에 설치가 끝난 날부터 (   )년 이내에 최초 안전검사를 실시하되, 그 이후부터 (   )년마다", answer: ["6", "3", "2"] },
-            { question: "산업안전보건법상 다음에 해당하는 양중기의 명칭을 각각 쓰시오 (1) 훅이나 그밖의 달기구 등을 사용하여 화물을 횡행 또는 권상동작만을 하여 양중하는 것 (2) 동력을 사용하여 중량물을 매달아 상하 및 좌우(수평 또는 선회)로 운반하는 것을 목적으로 하는 기계 또는 기계장치", answer: ["호이스트", "크레인"] },
-            { question: "산업안전보건법상 사업주가 제품의 생산공정과 직접적으로 관련된 건설물, 기계, 기구 및 설비 등 전부를 설치, 이전하거나 그 주요 구조부분을 변경하려는 경우 유해위험방지계획서를 제출할 때 첨부해야 하는 서류를 4가지 쓰시오", answer: ["건축물 각 층의 평면도", "기계 및 설비의 개요를 나타내는 서류", "기계 및 설비의 배치도면", "원재료 및 제품의 취급, 제조 등의 작업방법의 개요"] },
-            { question: "파단하중이 42.8kN인 와이어로프로 화물 1500kg을 두줄걸이로 60도의 각도로 들어올릴 때 (1) 안전율을 구하고 (2) 이와같은 권상작업에서 안전율의 만족, 불만족 여부를 판정하고 그 이유를 쓰시오", answer: ["5.04", "안전율이 5 이상이므로 만족"] },
-            { question: "산업안전보건법상 건설용 리프트, 곤돌라를 이용한 작업시 특별안전보건교육의 교육내용을 5가지 쓰시오", answer: ["방호장치의 기능 및 사용에 관한 사항", "기계, 기구, 달기체인 및 와이어 등의 점검에 관한 사항", "화물의 권상, 권하작업방법 및 안전작업지도에 관한 사항", "기계, 기구의 특성 및 동작원리에 관한 사항", "신호방법 및 공동작업에 관한 사항"] },
-            { question: "비등액체팽창 증기폭발, 즉 BLEVE에 영향을 미치는 인자를 5가지 쓰시오", answer: ["저장용기의 재질", "주위온도와 압력상태", "저장된 물질의 종류와 형태", "내용물의 물질적 역학상태", "내용물의 인화성 및 독성 여부"] },
-            { question: "산업안전보건법상 사업주가 화물운반용 또는 고정용으로 사용해서는 아니되는 섬유로프를 2가지 쓰시오", answer: ["꼬임이 끊어진 것", "심하게 손상되거나 부서진 것"] },
-            { question: "산업안전보건법상 산업안전보건위원회의 회의록 작성 내용을 3가지 쓰시오", answer: ["개최 일시 및 장소", "출석위원", "심의 내용 및 의결, 결정 사항"] }
-        ];
+      const quizData = [
+        { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 1번", answer: ["안전 및 보건에 관한 관리조직과 그 직무에 관한 사항"] },
+        { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 2번", answer: ["안전보건교육에 관한 사항"] },
+        { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 3번", answer: ["작업장의 안전 및 보건관리에 관한 사항"] },
+        { question: "산업안전보건법상 안전보건관리규정을 작성할 때 포함되어야 할 사항 4번", answer: ["사고조사 및 대책수립에 관한 사항"] },
+        { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 1. S", answer: ["요구성능(증기의 분출압력을 요구)"] },
+        { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 2. F", answer: ["유량제한기구(전량식)"] },
+        { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 3. II", answer: ["호칭입구 크기 구분(25mm 초과 50 mm 이하)"] },
+        { question: "다음에있는 안전밸브 형식 표시사항에 대해 순서대로 설명하여 쓰시오 : SF II 1-B (단 마지막에 있는 B는 제외) 4. 1", answer: ["호칭압력구분(1MPa 이하)"] },
+        { question: "유해, 위험 방지를 위한 방호조치를 하지 아니하고는 양도, 대여, 설치 또는 사용에 제공하거나 양도, 대여의 목적으로 진열해서는 아니되는 기계, 기구를 6가지 쓰시오", answer: ["예초기","원심기","공기압축기","금속절단기","지게차","포장기계(진공포장기, 래핑기로 한정)"] },
+        { question: "보호구 안전인증고시상 안전인증 대상 안전모의 시험 성능 항목을 6가지 쓰시오", answer: ["내관통성시험","내전압성시험","난연성시험","충격흡수시험","내수성시험","턱끈풀림시험"] },
+        { question: "클러치맞물림개소수가 4개, 300SPM인 프레스기 양수기동식 방호장치의 안전거리(mm)를 계산하시오", answer: ["240mm"] },
+        { question: "연평균근로자 1440명이 근무하는 어느 사업장에서 주당 40시간씩 연간 50주를 근무하고, 조기출근 및 잔업시간의 합계가 100,000시간, 출근율은 94%인 사업장에서 연간 40건의 재해가 발생하여 근로손실일수가 1200일, 사망재해가 1명 발생했을 때 강도율을 계산하시오", answer: ["약 3.1"] },
+        { question: "산업안전보건법상 ( ) 안에 적합한 내용을 쓰시오 (1)고용노동부장관은 사업주가 필요한 안전조치 또는 보건조치를 이행하지 아니하여 중대재해가 발생한 사업장은 안전보건진단을 받아 ( )을 수립하여 시행할 것을 명할 수 있다. (2)사업주는 수립, 시행 명령을 받은 날로부터 ( )일 이내에 관할 지방고용노동관서의 장에게 해당 계획서를 제출해야 한다.", answer: ["안전보건개선계획","60"] },
+        { question: "방호장치 안전인증고시상 손쳐내기식 방호장치를 사용하는 (1)기계, 기구의 명칭을 쓰고, (2)분류기호를 쓰시오", answer: ["프레스","D"] },
+        { question: "산업안전보건법상 다음에 해당하는 안전보건표지의 명칭을 각각 쓰시오", answer: ["폭발성물질 경고","부식성물질 경고","물체이동 금지","들것"] },
+        { question: "산업안전보건법상 철골작업을 중지해야 하는 기상조건에 대하여 ( )안에 알맞은 숫자를 쓰시오. 1. 풍속이 초당 ( )이상인 경우 2. 강우량이 시간당 ( )이상인 경우 3. 강설량이 시간당 ( )이상인 경우", answer: ["10m","1mm","1cm"] },
+        { question: "산업안전보건법상 안전인증 심사 중 형식별 제품심사의 심사기간을 60일로 하는 보호구를 8가지 쓰시오", answer: ["추락 및 감전위험방지용 안전모","안전화","안전장갑","방진마스크","방독마스크","송기마스크","전동식 호흡보호구","보호복"] },
+        { question: "다음은 산업안전보건법상 누전차단기를 접속하는 경우 사업주의 준수사항에 관한 것이다. ( )안에 적합한 내용을 쓰시오. 전기기계, 기구에 설치되어 있는 누전차단기는 정격감도전류가 ( )mA이하이고, 작동시간은 ( )초 이내일것", answer: ["30","0.03"] },
+        { question: "다음은 산업안전보건법상 작업중지의 해제에 관한 사항이다. ( )안에 적합한 내용을 쓰시오. 1. 사업주가 작업중지의 해제를 요청한 경우에는 작업중지명령 해제신청서를 작성하여 사업장의 소재지를 관할하는 지방고용노동관서의 장에게 제출해야 한다. 2. 사업주가 작업중지명령 해제신청서를 제출하는 경우에는 미리 유해, 위험요인 개선내용에 대하여 중대재해가 발생한 해당작업 ( )의 의견을 들어야 한다. 3. 지방고용노동관서의 장은 작업중지명령 해제를 요청받은 경우에는 ( )으로 하여금 안전, 보건을 위하여 필요한 조치를 확인하도록 하고, 천재지변 등 불가피한 경우를 제외하고는 해제요청일 다음날부터 ( )이내(토요일과 공휴일을 포함하되, 토요일과 공휴일이 연속하는 경우에는 3일까지만 포함)에 ( )를 개최하여 심의한 후 해당 조치가 완료되었다고 판단될 경우에는 즉시 작업중지명령을 해제해야 한다.", answer: ["근로자","근로감독관","4일","작업중지해제심의위원회"] },
+        { question: "공정안전보고서 내용 중 공정위험평가서에 적용되는 위험성평가기법에 있어 '저장탱크설비, 유틸리티 설비 및 제조공정 중 고체 건조, 분쇄설비 등 간단한 단위 공정'에 선정하는 위험성 평가기법을 보기에서 골라 2가지를 쓰시오 <보기>1. 이상위험도분석기법 2. 방호계층분석기법 3. 상대위험순위 결정기법 4. 작업자 실수분석기법", answer: ["상대위험순위 결정기법","작업자 실수분석기법"] },
+        { question: "산업안전보건법상 설치, 이전하는 경우 안전인증을 받아야 하는 기계를 3가지 쓰시오", answer: ["크레인","리프트","곤돌라"] },
+        { question: "산업안전보건법상 (1) 안전보건관리규정을 작성할 때 포함되어야 할 사항 4가지를 쓰시오", answer: ["안전 및 보건에 관한 관리조직과 그 직무에 관한 사항","안전보건교육에 관한 사항","작업장의 안전 및 보건관리에 관한 사항","사고조사 및 대책 수립에 관한 사항"] },
+        { question: "산업안전보건법상 (2) 안전보건관리규정을 작성해야하는 자동차 제조업의 상시근로자 수는 몇명 이상인지 쓰시오", answer: ["100명"] },
+        { question: "산업안전보건법상 산업용 로봇의 작동범위에서 로봇에 대하여 교시 등의 작업을 하는 경우에는 해당 로봇의 예기치 못한 작동 또는 오조작에 의한 위험을 방지하기 위하여 작업지침을 정하여 그 지츰에 따라 작업을 하도록 하여야 한다. 이 때 작업지침에 포함되어야 할 사항을 5가지 쓰시오", answer: ["로봇의 조작 방법 및 순서","작업중의 매니퓰레이터의 속도","2명이상의 근로자에게 작업을 시킬 경우의 신호 방법","이상을 발견한 경우의 조치","이상을 발견하여 로봇의 운전을 정지시킨 후 이를 재가동시킬 경우의 조치"] },
+        { question: "산업안전보건법상 관계자 외 출입금지 표지판 중 '허가대상물질 작업장' 표지 하단에 작성해야 할 내용을 2가지 쓰시오", answer: ["보호구 및 보호복 착용","흡연 및 음식물 섭취 금지"] },
+        { question: "산업안전보건법상 (1) 중대산업사고의 정의를 쓰시오", answer: ["유해하거나 위험한 설비로부터의 위험물질 누출, 화재 및 폭발 등으로 인하여 사업장 내의 근로자에게 즉시 피해를 주거나 사업장 인근지역에 피해를 줄 수 있는 사고"] },
+        { question: "산업안전보건법상 (2) 중대산업사고 예방을 위해 작성하고 고용노동부장관에게 제출하여 심사를 받아야 하는 보고서의 명칭을 쓰시오", answer: ["공정안전보고서"] },
+        { question: "산업안전보건법상 사업주가 작업장에서 취급하는 물질안전보건자료의 내용을 근로자에게 교육해야 하는 경우에 대해 3가지 쓰시오", answer: ["새로운 물질안전보건자료 대상물질이 도입된 경우","유해성 및 위험성 정보가 변경된 경우","물질안전보건자료 대상물질을 제조, 사용, 운반 또는 저장하는 작업에 근로자를 배치하게 된 경우"] },
+        { question: "안전검사 대상 기계 등의 안전검사 주기에 관한 사항이다. 적합한 숫자를 쓰시오 (1) 건설현장에서 사용하는 리프트 : 최초로 설치한 날부터 (   )개월마다 (2) 산업용 로봇 : 사업장에 설치가 끝난 날부터 (   )년 이내에 최초 안전검사를 실시하되, 그 이후부터 (   )년마다", answer: ["6","3","2"] },
+        { question: "산업안전보건법상 다음에 해당하는 양중기의 명칭을 각각 쓰시오 (1) 훅이나 그밖의 달기구 등을 사용하여 화물을 횡행 또는 권상동작만을 하여 양중하는 것 (2) 동력을 사용하여 중량물을 매달아 상하 및 좌우(수평 또는 선회)로 운반하는 것을 목적으로 하는 기계 또는 기계장치", answer: ["호이스트","크레인"] },
+        { question: "산업안전보건법상 사업주가 제품의 생산공정과 직접적으로 관련된 건설물, 기계, 기구 및 설비 등 전부를 설치, 이전하거나 그 주요 구조부분을 변경하려는 경우 유해위험방지계획서를 제출할 때 첨부해야 하는 서류를 4가지 쓰시오", answer: ["건축물 각 층의 평면도","기계 및 설비의 개요를 나타내는 서류","기계 및 설비의 배치도면","원재료 및 제품의 취급, 제조 등의 작업방법의 개요"] },
+        { question: "파단하중이 42.8kN인 와이어로프로 화물 1500kg을 두줄걸이로 60도의 각도로 들어올릴 때 (1) 안전율을 구하고 (2) 이와같은 권상작업에서 안전율의 만족, 불만족 여부를 판정하고 그 이유를 쓰시오", answer: ["5.04","안전율이 5 이상이므로 만족"] },
+        { question: "산업안전보건법상 건설용 리프트, 곤돌라를 이용한 작업시 특별안전보건교육의 교육내용을 5가지 쓰시오", answer: ["방호장치의 기능 및 사용에 관한 사항","기계, 기구, 달기체인 및 와이어 등의 점검에 관한 사항","화물의 권상, 권하작업방법 및 안전작업지도에 관한 사항","기계, 기구의 특성 및 동작원리에 관한 사항","신호방법 및 공동작업에 관한 사항"] },
+        { question: "비등액체팽창 증기폭발, 즉 BLEVE에 영향을 미치는 인자를 5가지 쓰시오", answer: ["저장용기의 재질","주위온도와 압력상태","저장된 물질의 종류와 형태","내용물의 물질적 역학상태","내용물의 인화성 및 독성 여부"] },
+        { question: "산업안전보건법상 사업주가 화물운반용 또는 고정용으로 사용해서는 아니되는 섬유로프를 2가지 쓰시오", answer: ["꼬임이 끊어진 것","심하게 손상되거나 부서진 것"] },
+        { question: "산업안전보건법상 산업안전보건위원회의 회의록 작성 내용을 3가지 쓰시오", answer: ["개최 일시 및 장소","출석위원","심의 내용 및 의결, 결정 사항"] }
+      ];
 
-        let currentQuestionIndex = 0;
-        let isAnswerChecked = false;
-        let correctAnswersCount = 0;
-        let totalAnswered = 0;
+      let currentQuestionIndex = 0;
+      let isAnswerChecked = false;
+      let correctAnswersCount = 0;
+      let totalAnswered = 0;
 
-        const quizQuestionElement = document.getElementById('quiz-question');
-        const resultMessageElement = document.getElementById('result-message');
-        const announcerCharacter = document.getElementById('announcer-character');
-        const progressFill = document.getElementById('progress-fill');
-        const questionCounter = document.getElementById('question-counter');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+      const quizQuestionElement = document.getElementById('quiz-question');
+      const resultMessageElement = document.getElementById('result-message');
+      const announcerCharacter = document.getElementById('announcer-character');
+      const progressFill = document.getElementById('progress-fill');
+      const questionCounter = document.getElementById('question-counter');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
 
-        function updateProgress() {
-            const progress = (currentQuestionIndex / quizData.length) * 100;
-            progressFill.style.width = progress + '%';
-            questionCounter.textContent = `문제 ${currentQuestionIndex + 1} / ${quizData.length}`;
-            prevBtn.disabled = currentQuestionIndex === 0;
+      function updateProgress() {
+        const progress = (currentQuestionIndex / quizData.length) * 100;
+        progressFill.style.width = progress + '%';
+        questionCounter.textContent = `문제 ${currentQuestionIndex + 1} / ${quizData.length}`;
+        prevBtn.disabled = currentQuestionIndex === 0;
+      }
+
+      function createQuestion(index) {
+        if (index >= 0 && index < quizData.length) {
+          const q = quizData[index];
+          const placeholderText = q.answer.length > 1
+            ? "쉼표(,)로 구분하여 모두 입력하세요"
+            : "정답을 입력하세요";
+          quizQuestionElement.innerHTML = `
+            <h2>Q${index + 1}. ${q.question}</h2>
+            <input type="text" id="user-answer" placeholder="${placeholderText}" autocomplete="off">
+          `;
+          updateProgress();
+          const ua = document.getElementById('user-answer');
+          ua && ua.focus();
+          resultMessageElement.textContent = "";
+          resultMessageElement.className = "";
+          changeCharacterEmotion('default');
+          isAnswerChecked = false;
+        } else if (index >= quizData.length) {
+          const accuracy = totalAnswered > 0 ? Math.round((correctAnswersCount / totalAnswered) * 100) : 0;
+          quizQuestionElement.innerHTML = `
+            <h2>🎉 퀴즈가 끝났습니다! 🎉</h2>
+            <p>총 ${totalAnswered}문제 중 ${correctAnswersCount}문제 정답</p>
+            <p>정답률: ${accuracy}%</p>
+          `;
+          progressFill.style.width = '100%';
+          questionCounter.textContent = "완료!";
+          resultMessageElement.textContent = "";
+          resultMessageElement.className = "";
+          changeCharacterEmotion('finish');
+        } else {
+          currentQuestionIndex = 0;
+          createQuestion(currentQuestionIndex);
+        }
+      }
+
+      function changeCharacterEmotion(emotion) {
+        const imgMap = {
+          correct: "announcer_correct.gif",
+          wrong: "announcer_wrong.gif",
+          finish: "announcer_finish.gif",
+          default: "announcer_default.gif"
+        };
+        const src = imgMap[emotion] || imgMap.default;
+        if (announcerCharacter) announcerCharacter.src = src;
+      }
+
+      function checkAnswer() {
+        const userAnswer = (document.getElementById('user-answer')?.value || "")
+                            .trim().toLowerCase();
+        const correctAnswers = quizData[currentQuestionIndex].answer.map(a => a.toLowerCase());
+
+        let isCorrect = false;
+        if (correctAnswers.length > 1) {
+          const userArr = userAnswer.split(',').map(s => s.trim());
+          const allMatch = correctAnswers.every(ca => userArr.includes(ca));
+          isCorrect = allMatch && (userArr.length === correctAnswers.length);
+        } else {
+          isCorrect = correctAnswers.includes(userAnswer);
         }
 
-        function createQuestion(index) {
-            if (index >= 0 && index < quizData.length) {
-                const questionData = quizData[index];
-                let placeholderText = questionData.answer.length > 1 
-                    ? "쉼표(,)로 구분하여 모두 입력하세요" 
-                    : "정답을 입력하세요";
-
-                quizQuestionElement.innerHTML = `
-                    <h2>Q${index + 1}. ${questionData.question}</h2>
-                    <input type="text" id="user-answer" placeholder="${placeholderText}" autocomplete="off">
-                `;
-                updateProgress();
-                document.getElementById('user-answer').focus();
-                resultMessageElement.textContent = "";
-                resultMessageElement.className = "";
-                changeCharacterEmotion('default');
-                isAnswerChecked = false;
-            } else if (index >= quizData.length) {
-                const accuracy = totalAnswered > 0 
-                    ? Math.round((correctAnswersCount / totalAnswered) * 100) : 0;
-                quizQuestionElement.innerHTML = `
-                    <h2>🎉 퀴즈가 끝났습니다! 🎉</h2>
-                    <p>총 ${totalAnswered}문제 중 ${correctAnswersCount}문제 정답</p>
-                    <p>정답률: ${accuracy}%</p>
-                `;
-                progressFill.style.width = '100%';
-                questionCounter.textContent = "완료!";
-                resultMessageElement.textContent = "";
-                resultMessageElement.className = "";
-                changeCharacterEmotion('finish');
-            } else {
-                currentQuestionIndex = 0;
-                createQuestion(currentQuestionIndex);
-            }
+        totalAnswered++;
+        if (isCorrect) {
+          correctAnswersCount++;
+          resultMessageElement.textContent = "✅ 정답입니다!";
+          resultMessageElement.className = "correct";
+          changeCharacterEmotion('correct');
+          return true;
+        } else {
+          resultMessageElement.textContent = `❌ 틀렸습니다. 정답은 '${quizData[currentQuestionIndex].answer.join(', ')}' 입니다.`;
+          resultMessageElement.className = "wrong";
+          changeCharacterEmotion('wrong');
+          return false;
         }
+      }
 
-        function changeCharacterEmotion(emotion) {
-            const imgMap = {
-                correct: "announcer_correct.gif",
-                wrong: "announcer_wrong.gif",
-                finish: "announcer_finish.gif",
-                default: "announcer_default.gif"
-            };
-            announcerCharacter.src = imgMap[emotion] || imgMap.default;
+      function resetQuiz() {
+        currentQuestionIndex = 0;
+        correctAnswersCount = 0;
+        totalAnswered = 0;
+        createQuestion(currentQuestionIndex);
+        alert("퀴즈가 처음으로 돌아갑니다.");
+      }
+
+      // 버튼 이벤트
+      prevBtn.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          createQuestion(currentQuestionIndex);
         }
-
-        function checkAnswer() {
-            const userAnswer = document.getElementById('user-answer').value.trim().toLowerCase();
-            const correctAnswers = quizData[currentQuestionIndex].answer.map(a => a.toLowerCase());
-            let isCorrect = false;
-
-            if (correctAnswers.length > 1) {
-                const userArr = userAnswer.split(',').map(s => s.trim());
-                const allMatch = correctAnswers.every(ca => userArr.includes(ca));
-                isCorrect = allMatch && (userArr.length === correctAnswers.length);
-            } else {
-                isCorrect = correctAnswers.includes(userAnswer);
-            }
-
-            totalAnswered++;
-            if (isCorrect) {
-                correctAnswersCount++;
-                resultMessageElement.textContent = "✅ 정답입니다!";
-                resultMessageElement.className = "correct";
-                changeCharacterEmotion('correct');
-                return true;
-            } else {
-                resultMessageElement.textContent = `❌ 틀렸습니다. 정답은 '${quizData[currentQuestionIndex].answer.join(', ')}' 입니다.`;
-                resultMessageElement.className = "wrong";
-                changeCharacterEmotion('wrong');
-                return false;
-            }
+      });
+      nextBtn.addEventListener('click', () => {
+        const userInput = document.getElementById('user-answer');
+        if (userInput && !isAnswerChecked) {
+          if (userInput.value.trim() === "") {
+            resultMessageElement.textContent = "답을 입력해주세요.";
+            resultMessageElement.className = "warning";
+            return;
+          }
+          const correct = checkAnswer();
+          isAnswerChecked = true;
+          if (correct) {
+            setTimeout(() => {
+              currentQuestionIndex++;
+              createQuestion(currentQuestionIndex);
+            }, 800);
+          }
+        } else {
+          currentQuestionIndex++;
+          createQuestion(currentQuestionIndex);
         }
+      });
 
-        function resetQuiz() {
-            currentQuestionIndex = 0;
-            correctAnswersCount = 0;
-            totalAnswered = 0;
+      // 키보드 단축키 (데스크톱용)
+      document.addEventListener('keydown', (event) => {
+        if (event.altKey && event.key === 'z') { resetQuiz(); return; }
+        if (event.altKey && event.key === 'b') {
+          if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
             createQuestion(currentQuestionIndex);
-            alert("퀴즈가 처음으로 돌아갑니다.");
+          }
+          return;
         }
-
-        // 버튼 이벤트
-        prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                createQuestion(currentQuestionIndex);
-            }
-        });
-        nextBtn.addEventListener('click', () => {
-            const userInput = document.getElementById('user-answer');
-            if (userInput && !isAnswerChecked) {
-                if (userInput.value.trim() === "") {
-                    resultMessageElement.textContent = "답을 입력해주세요.";
-                    resultMessageElement.className = "warning";
-                    return;
-                }
-                const correct = checkAnswer();
-                isAnswerChecked = true;
-                if (correct) {
-                    setTimeout(() => {
-                        currentQuestionIndex++;
-                        createQuestion(currentQuestionIndex);
-                    }, 800);
-                }
-            } else {
+        if (event.key === 'Enter') {
+          const userInput = document.getElementById('user-answer');
+          if (!userInput) return;
+          if (userInput.value.trim() === "") {
+            resultMessageElement.textContent = "답을 입력해주세요.";
+            resultMessageElement.className = "warning";
+            return;
+          }
+          if (!isAnswerChecked) {
+            const correct = checkAnswer();
+            isAnswerChecked = true;
+            if (correct) {
+              setTimeout(() => {
                 currentQuestionIndex++;
                 createQuestion(currentQuestionIndex);
+              }, 800);
             }
-        });
+          } else {
+            currentQuestionIndex++;
+            createQuestion(currentQuestionIndex);
+          }
+        }
+      });
 
-        // 기존 키보드 이벤트 유지
-        document.addEventListener('keydown', (event) => {
-            if (event.altKey && event.key === 'z') { resetQuiz(); return; }
-            if (event.altKey && event.key === 'b') {
-                if (currentQuestionIndex > 0) {
-                    currentQuestionIndex--;
-                    createQuestion(currentQuestionIndex);
-                }
-                return;
-            }
-            if (event.key === 'Enter') {
-                const userInput = document.getElementById('user-answer');
-                if (!userInput) return;
-                if (userInput.value.trim() === "") {
-                    resultMessageElement.textContent = "답을 입력해주세요.";
-                    resultMessageElement.className = "warning";
-                    return;
-                }
-                if (!isAnswerChecked) {
-                    const correct = checkAnswer();
-                    isAnswerChecked = true;
-                    if (correct) {
-                        setTimeout(() => {
-                            currentQuestionIndex++;
-                            createQuestion(currentQuestionIndex);
-                        }, 800);
-                    }
-                } else {
-                    currentQuestionIndex++;
-                    createQuestion(currentQuestionIndex);
-                }
-            }
-        });
-
-        createQuestion(currentQuestionIndex);
+      createQuestion(currentQuestionIndex);
     });
-</script>
+  </script>
 </body>
 </html>
-
 
