@@ -16,6 +16,7 @@
       align-items: center;
       min-height: 100vh; /* 데스크톱 기준 */
       overflow: auto;    /* 모바일 키보드 시 스크롤 허용 */
+      padding-bottom: env(safe-area-inset-bottom, 0); /* iOS 하단 여유 */
     }
 
     .quiz-container {
@@ -60,6 +61,7 @@
       flex-direction: column;
       max-height: 80vh;
       overflow-y: auto;
+      scroll-padding-bottom: 100px; /* 키보드/버튼 고려 */
     }
 
     .progress-bar {
@@ -92,6 +94,7 @@
       overflow-wrap: break-word;
       white-space: normal;
       line-height: 1.5;
+      word-break: keep-all;
     }
 
     input[type="text"] {
@@ -99,7 +102,7 @@
       padding: 12px 14px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 16px; /* 데스크톱 기준 */
+      font-size: 16px; /* 데스크톱 기준(모바일은 아래 17px) */
       text-align: center;
       box-sizing: border-box;
     }
@@ -124,6 +127,10 @@
       justify-content: space-between;
       margin-top: 16px;
       gap: 10px;
+      position: sticky;
+      bottom: 0;               /* 스크롤해도 하단에 붙어있게 */
+      background: #fff;
+      padding-top: 8px;
     }
     .nav-btn {
       flex: 1;
@@ -135,6 +142,7 @@
       background-color: #4CAF50;
       color: #fff;
       transition: background 0.2s ease;
+      touch-action: manipulation; /* 모바일 더블탭 확대 방지 힌트 */
     }
     .nav-btn:hover { background-color: #45a049; }
     .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; }
@@ -178,8 +186,8 @@
       .question-box h2 { font-size: 16px; line-height: 1.5; word-break: keep-all; }
       input[type="text"] { font-size: 17px; line-height: 1.5; padding: 14px 12px; }
       .question-counter { font-size: 13px; margin-bottom: 10px; }
-      /* 모바일에서는 안내문 숨김 */
-      #navigation-info { display: none; }
+      /* 모바일에서는 안내문 확실히 숨김 */
+      #navigation-info { display: none !important; }
     }
 
     /* 초소형 화면(아이폰 SE 등)에서는 캐릭터 숨김 */
@@ -257,29 +265,29 @@
         { question: "산업안전보건법상 건설용 리프트, 곤돌라를 이용한 작업시 특별안전보건교육의 교육내용을 5가지 쓰시오", answer: ["방호장치의 기능 및 사용에 관한 사항","기계, 기구, 달기체인 및 와이어 등의 점검에 관한 사항","화물의 권상, 권하작업방법 및 안전작업지도에 관한 사항","기계, 기구의 특성 및 동작원리에 관한 사항","신호방법 및 공동작업에 관한 사항"] },
         { question: "비등액체팽창 증기폭발, 즉 BLEVE에 영향을 미치는 인자를 5가지 쓰시오", answer: ["저장용기의 재질","주위온도와 압력상태","저장된 물질의 종류와 형태","내용물의 물질적 역학상태","내용물의 인화성 및 독성 여부"] },
         { question: "산업안전보건법상 사업주가 화물운반용 또는 고정용으로 사용해서는 아니되는 섬유로프를 2가지 쓰시오", answer: ["꼬임이 끊어진 것","심하게 손상되거나 부식된 것"] },
-        { question: "산업안전보건법상 근로자가 반복하여 계속적으로 중량물을 취급하는 작업을 할 때 작업시작 전 점검사항을 4가지 쓰시오", answer: ["중량물 취급의 올바른 자세 및 복장","위험물이 날아 흩어짐에 따른 보호구의 착용","카바이드, 생석회(산화칼슘) 등과 같이 온도상승이나 습기에 의하여 위험성이 존재하는 중량물의 취급방법", "그밖에 하역운반기계 등의 적절한 사용방법"] }
-        { question: "산업안전보건법상 정전기에 의한 화재 또는 폭발 등의 위험이 발생할 우려가 있는 경우 인체에 대한 조치 사항을 4가지 쓰시오", answer: ["정전기 대전방지용 안전화 착용","제전복 착용","정전기 제전용구 사용", "작업장 바닥 등에 도전성을 갖추도록 함"] } 
-        { question: "다음 보기를 보고 (   ) 안에 적합한 내용을 쓰시오 <보기> 다음에 해당하는 회사는 매년 회사의 안전 및 보건에 관한 계획을 수립하여 이사회에 보고하고 승인을 받아야 한다. (1) 상시근로자 (    )명 이상을 사용하는 회사 (2) 건설산업안전기본법 제 23조에 따라 평가하여 공시된 시공능력의 순위 상위 (    )위 이내의 건설회사", answer: ["500","1000"] }
-        { question: "산업재해통계업무처리규정상 다음의 내용을 보고 이 사업장의 사망만인율을 계산하시오. (단, 근로자수는 산업재해보상보험법이 적용되는 근로자수를 말한다) (1) 사망자수 : 5명 (2) 산업재해보상보험 적용 근로자수 : 20,000명 (3) 임금근로자수 : 20,700명", answer: ["2.5"] }
-        { question: "다음 그림을 보고 (1) 보호구 안전인증 고시상 명칭을 쓰고 (2) 해당 보호구가 갖추어야 하는 부품의 구조기준을 2가지 쓰시오", answer: ["안전블록","자동잠김장치를 갖출것, 안전블록의 부품은 부식방지처리를 할 것"] }
-        { question: "다음은 산업안전보건법에 규정되어 있는 사항이다. (    )안에 적합한 내용을 쓰시오 (1) 사업주는 사업장에 대통령령으로 정하는 유해하거나 위험한 설비가 있는 경우 중대산업사고를 예방하기 위하여 대통령령으로 정하는 바에 따라 (    )를 작성하고 고용노동부장관에게 제출하여 심사를 받아야 한다", answer: ["공정안전보고서"] }
-        { question: "(2) 사업주는 제 1항에 따라 (    )를 작성할 때 (    ) 심의를 거쳐야 한다. 다만 (    )가 설치되어 있지 아니한 사업장의 경우에는 근로자대표의 의견을 들어야 한다.", answer: ["공정안전보고서","산업안전보건위원회","산업안전보건위원회"] }
-        { question: "다음과 같은 재해가 발생하였을 때 분류되는 재해발생 형태를 쓰시오 (1) 사고당시 바닥면과 신체가 접해있는 상태에서 더 낮은 위치로 떨어진 경우", answer: ["넘어짐"] }
-        { question: "(2) 폭발과 화재, 두 현상이 복합적으로 발생한 경우", answer: ["폭발"] }  
-        { question: "(3) 재해자가 전도로 인하여 기계의 동력전달부위 등에 협착되어 신체부위가 절단된 경우", answer: ["끼임"] }
-        { question: "(4) 사고 당시 바닥면과 신체가 떨어진 상태로 더 낮은 위치로 떨어진 경우", answer: ["떨어짐"] }
-        { question: "다음 각 위험물질에 해당하는 것을 보기에서 모두 골라 쓰시오 (1) 인화성 액체 (2) 산화성 액체 및 산화성 고체 (3) 인화성 가스 <보기> 1. 아세틸렌 2. 과염소산 3. 리튬 4. 등유 5. 마그네슘 분말", answer: ["등유","과염소산","아세틸렌"] }
-        { question: "산업안전보건법상 양중기의 종류를 5가지 쓰시오", answer: ["승강기","곤돌라","리프트(이삿짐운반용 리프트의 경우에는 적재하중이 0.1톤 이상인 것)", "이동식 크레인", "크레인(호이스트를 포함)"] }
-        { question: "보호구안전인증 고시상 1급 방진마스크를 사용하여야 하는 장소를 3가지 쓰시오", answer: ["특급마스크 착용장소를 제외한 분진 등 발생 장소","금속 흄 등과 같이 열적으로 생기는 분진 등 발생장소","기계적으로 생기는 분진 등 발생장소(규소 등과 같이 2급 방진마스크를 착용하여도 무방한 경우는 제외한다)"] }
-        { question: "산업안전보건법상 작업발판일체형 거푸집 종류를 4가지 쓰시오", answer: ["갱폼","슬립폼","클라이밍폼", "터널라이닝폼"] }
-        { question: "산업안전보건법상 누전에 의한 감전의 위험을 방지하기 위하여 코드와 플러그를 접속하여 사용하는 전기기계 기구 중 접지를 하여야 하는 노출된 비충전금속체 부분을 보기에서 2가지를 골라서 쓰시오 <보기> 1. 사용전압이 대지전압 110V를 넘는것 2. 물 또는 도전성이 높은 곳에서 사용하는 전기기계 기구 비접지형 콘센트 3. 고정식 손전등 4. 냉장고, 세탁기, 컴퓨터 및 주변기기 등과 같은 고정형 전기기계 기구", answer: ["2","4"] }
-        { question: "내전압용 절연장갑의 등급에 대한 사항이다. (   )안에 적합한 내용을 쓰시오. 1. 등급 00 : 최대사용전압 교류(V, 실효값) 500, 직류(V) (    ), 등급별 색상 갈색", answer: ["750"] }
-        { question: "2. 등급 0 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) 1,500, 등급별 색상 빨간색 ", answer: ["1,000"] }
-        { question: "3. 등급 1 : 최대사용전압 교류(V, 실효값) 7,500, 직류(V) (    ), 등급별 색상 흰색", answer: ["11,250"] }
-        { question: "4. 등급 2 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) 25,500, 등급별 색상 노란색", answer: ["17,000"] }
-        { question: "5. 등급 3 : 최대사용전압 교류(V, 실효값) 26,500, 직류(V) 39,750, 등급별 색상 (    )", answer: ["녹색"] }
-        { question: "6. 등급 4 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) (    ), 등급별 색상 등색", answer: ["36,000", "54,000"] }
-        { question: "연삭기 숫돌의 파괴 원인을 9가지 쓰시오", answer: ["숫돌의 회전속도가 적정속도를 초과할 때", "숫돌에 과대한 충격을 가할 때", "작업에 부적당한 숫돌을 사용할 때", "숫돌의 치수가 부적당할 때", "숫돌 자체에 균열이 있을 때", "숫돌반경방향의 온도변화가 심할 때", "숫돌의 측면을 사용하여 작업할 때", "숫돌의 불균형이나 베어링 마모에 의한 진동이 있을 때", "플랜지가 현저히 작을 때"] }
+        { question: "산업안전보건법상 근로자가 반복하여 계속적으로 중량물을 취급하는 작업을 할 때 작업시작 전 점검사항을 4가지 쓰시오", answer: ["중량물 취급의 올바른 자세 및 복장","위험물이 날아 흩어짐에 따른 보호구의 착용","카바이드, 생석회(산화칼슘) 등과 같이 온도상승이나 습기에 의하여 위험성이 존재하는 중량물의 취급방법", "그밖에 하역운반기계 등의 적절한 사용방법"] },
+        { question: "산업안전보건법상 정전기에 의한 화재 또는 폭발 등의 위험이 발생할 우려가 있는 경우 인체에 대한 조치 사항을 4가지 쓰시오", answer: ["정전기 대전방지용 안전화 착용","제전복 착용","정전기 제전용구 사용","작업장 바닥 등에 도전성을 갖추도록 함"] },
+        { question: "다음 보기를 보고 (   ) 안에 적합한 내용을 쓰시오 <보기> 다음에 해당하는 회사는 매년 회사의 안전 및 보건에 관한 계획을 수립하여 이사회에 보고하고 승인을 받아야 한다. (1) 상시근로자 (    )명 이상을 사용하는 회사 (2) 건설산업안전기본법 제 23조에 따라 평가하여 공시된 시공능력의 순위 상위 (    )위 이내의 건설회사", answer: ["500","1000"] },
+        { question: "산업재해통계업무처리규정상 다음의 내용을 보고 이 사업장의 사망만인율을 계산하시오. (단, 근로자수는 산업재해보상보험법이 적용되는 근로자수를 말한다) (1) 사망자수 : 5명 (2) 산업재해보상보험 적용 근로자수 : 20,000명 (3) 임금근로자수 : 20,700명", answer: ["2.5"] },
+        { question: "다음 그림을 보고 (1) 보호구 안전인증 고시상 명칭을 쓰고 (2) 해당 보호구가 갖추어야 하는 부품의 구조기준을 2가지 쓰시오", answer: ["안전블록","자동잠김장치를 갖출것, 안전블록의 부품은 부식방지처리를 할 것"] },
+        { question: "다음은 산업안전보건법에 규정되어 있는 사항이다. (    )안에 적합한 내용을 쓰시오 (1) 사업주는 사업장에 대통령령으로 정하는 유해하거나 위험한 설비가 있는 경우 중대산업사고를 예방하기 위하여 대통령령으로 정하는 바에 따라 (    )를 작성하고 고용노동부장관에게 제출하여 심사를 받아야 한다", answer: ["공정안전보고서"] },
+        { question: "(2) 사업주는 제 1항에 따라 (    )를 작성할 때 (    ) 심의를 거쳐야 한다. 다만 (    )가 설치되어 있지 아니한 사업장의 경우에는 근로자대표의 의견을 들어야 한다.", answer: ["공정안전보고서","산업안전보건위원회","산업안전보건위원회"] },
+        { question: "다음과 같은 재해가 발생하였을 때 분류되는 재해발생 형태를 쓰시오 (1) 사고당시 바닥면과 신체가 접해있는 상태에서 더 낮은 위치로 떨어진 경우", answer: ["넘어짐"] },
+        { question: "(2) 폭발과 화재, 두 현상이 복합적으로 발생한 경우", answer: ["폭발"] },
+        { question: "(3) 재해자가 전도로 인하여 기계의 동력전달부위 등에 협착되어 신체부위가 절단된 경우", answer: ["끼임"] },
+        { question: "(4) 사고 당시 바닥면과 신체가 떨어진 상태로 더 낮은 위치로 떨어진 경우", answer: ["떨어짐"] },
+        { question: "다음 각 위험물질에 해당하는 것을 보기에서 모두 골라 쓰시오 (1) 인화성 액체 (2) 산화성 액체 및 산화성 고체 (3) 인화성 가스 <보기> 1. 아세틸렌 2. 과염소산 3. 리튬 4. 등유 5. 마그네슘 분말", answer: ["등유","과염소산","아세틸렌"] },
+        { question: "산업안전보건법상 양중기의 종류를 5가지 쓰시오", answer: ["승강기","곤돌라","리프트(이삿짐운반용 리프트의 경우에는 적재하중이 0.1톤 이상인 것)","이동식 크레인","크레인(호이스트를 포함)"] },
+        { question: "보호구안전인증 고시상 1급 방진마스크를 사용하여야 하는 장소를 3가지 쓰시오", answer: ["특급마스크 착용장소를 제외한 분진 등 발생 장소","금속 흄 등과 같이 열적으로 생기는 분진 등 발생장소","기계적으로 생기는 분진 등 발생장소(규소 등과 같이 2급 방진마스크를 착용하여도 무방한 경우는 제외한다)"] },
+        { question: "산업안전보건법상 작업발판일체형 거푸집 종류를 4가지 쓰시오", answer: ["갱폼","슬립폼","클라이밍폼","터널라이닝폼"] },
+        { question: "산업안전보건법상 누전에 의한 감전의 위험을 방지하기 위하여 코드와 플러그를 접속하여 사용하는 전기기계 기구 중 접지를 하여야 하는 노출된 비충전금속체 부분을 보기에서 2가지를 골라서 쓰시오 <보기> 1. 사용전압이 대지전압 110V를 넘는것 2. 물 또는 도전성이 높은 곳에서 사용하는 전기기계 기구 비접지형 콘센트 3. 고정식 손전등 4. 냉장고, 세탁기, 컴퓨터 및 주변기기 등과 같은 고정형 전기기계 기구", answer: ["2","4"] },
+        { question: "내전압용 절연장갑의 등급에 대한 사항이다. (   )안에 적합한 내용을 쓰시오. 1. 등급 00 : 최대사용전압 교류(V, 실효값) 500, 직류(V) (    ), 등급별 색상 갈색", answer: ["750"] },
+        { question: "2. 등급 0 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) 1,500, 등급별 색상 빨간색 ", answer: ["1,000"] },
+        { question: "3. 등급 1 : 최대사용전압 교류(V, 실효값) 7,500, 직류(V) (    ), 등급별 색상 흰색", answer: ["11,250"] },
+        { question: "4. 등급 2 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) 25,500, 등급별 색상 노란색", answer: ["17,000"] },
+        { question: "5. 등급 3 : 최대사용전압 교류(V, 실효값) 26,500, 직류(V) 39,750, 등급별 색상 (    )", answer: ["녹색"] },
+        { question: "6. 등급 4 : 최대사용전압 교류(V, 실효값) (    ), 직류(V) (    ), 등급별 색상 등색", answer: ["36,000","54,000"] },
+        { question: "연삭기 숫돌의 파괴 원인을 9가지 쓰시오", answer: ["숫돌의 회전속도가 적정속도를 초과할 때","숫돌에 과대한 충격을 가할 때","작업에 부적당한 숫돌을 사용할 때","숫돌의 치수가 부적당할 때","숫돌 자체에 균열이 있을 때","숫돌반경방향의 온도변화가 심할 때","숫돌의 측면을 사용하여 작업할 때","숫돌의 불균형이나 베어링 마모에 의한 진동이 있을 때","플랜지가 현저히 작을 때"] }
       ];
 
       let currentQuestionIndex = 0;
@@ -310,11 +318,19 @@
             : "정답을 입력하세요";
           quizQuestionElement.innerHTML = `
             <h2>Q${index + 1}. ${q.question}</h2>
-            <input type="text" id="user-answer" placeholder="${placeholderText}" autocomplete="off">
+            <input type="text" id="user-answer" placeholder="${placeholderText}" autocomplete="off" inputmode="text">
           `;
           updateProgress();
           const ua = document.getElementById('user-answer');
-          ua && ua.focus();
+          if (ua) {
+            ua.focus();
+            /* iPhone 키보드로 가려지는 문제 방지: 포커스 시 중앙으로 스크롤 */
+            ua.addEventListener('focus', () => {
+              setTimeout(() => {
+                ua.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              }, 100);
+            });
+          }
           resultMessageElement.textContent = "";
           resultMessageElement.className = "";
           changeCharacterEmotion('default');
@@ -348,16 +364,37 @@
         if (announcerCharacter) announcerCharacter.src = src;
       }
 
+      /* ===== 정답 비교 유연화 =====
+         - 괄호/공백/구두점 제거 후 비교
+         - 다중정답은 순서 무관 & 중복입력 허용 안 함
+      */
+      function normalize(s) {
+        return (s || "")
+          .toLowerCase()
+          .replace(/\s+/g, '')           // 공백 제거
+          .replace(/[()［］\[\]{}]/g, '') // 괄호류 제거
+          .replace(/[.,:;\/\\\-–—_~'"“”‘’`]/g, ''); // 구두점 제거
+      }
+
       function checkAnswer() {
-        const userAnswer = (document.getElementById('user-answer')?.value || "")
-                            .trim().toLowerCase();
-        const correctAnswers = quizData[currentQuestionIndex].answer.map(a => a.toLowerCase());
+        const uaEl = document.getElementById('user-answer');
+        const userRaw = (uaEl?.value || "").trim();
+        const userAnswer = normalize(userRaw);
+
+        const correctRaw = quizData[currentQuestionIndex].answer;
+        const correctAnswers = correctRaw.map(a => normalize(a));
 
         let isCorrect = false;
         if (correctAnswers.length > 1) {
-          const userArr = userAnswer.split(',').map(s => s.trim());
-          const allMatch = correctAnswers.every(ca => userArr.includes(ca));
-          isCorrect = allMatch && (userArr.length === correctAnswers.length);
+          const userArr = userRaw.split(',').map(s => normalize(s));
+          // 빈 문자열 제거
+          const filtered = userArr.filter(s => s);
+          if (filtered.length === correctAnswers.length) {
+            // 모든 정답 포함(순서 무관)
+            isCorrect = correctAnswers.every(ca => filtered.includes(ca));
+          } else {
+            isCorrect = false;
+          }
         } else {
           isCorrect = correctAnswers.includes(userAnswer);
         }
@@ -370,6 +407,7 @@
           changeCharacterEmotion('correct');
           return true;
         } else {
+          // 원문 정답을 그대로, 잘림 없이 표시
           resultMessageElement.textContent = `❌ 틀렸습니다. 정답은 '${quizData[currentQuestionIndex].answer.join(', ')}' 입니다.`;
           resultMessageElement.className = "wrong";
           changeCharacterEmotion('wrong');
@@ -406,7 +444,7 @@
             setTimeout(() => {
               currentQuestionIndex++;
               createQuestion(currentQuestionIndex);
-            }, 800);
+            }, 700);
           }
         } else {
           currentQuestionIndex++;
@@ -439,7 +477,7 @@
               setTimeout(() => {
                 currentQuestionIndex++;
                 createQuestion(currentQuestionIndex);
-              }, 800);
+              }, 700);
             }
           } else {
             currentQuestionIndex++;
@@ -453,6 +491,4 @@
   </script>
 </body>
 </html>
-
-
 
